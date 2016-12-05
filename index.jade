@@ -1,0 +1,25 @@
+//output:index.html
+doctype html
+html
+  head
+    meta(charset='utf8')
+    title The Coding Programming Language - Interpreter
+    script(src='peg.js')
+    script(src='coding.js')
+    style.
+      textarea{
+        font-family:monospace;
+      }
+  body
+    textarea#x
+    button#r Run
+    script.
+      r.onclick=_=>{
+        Coding.eval(x.value,(a,b)=>{
+          dv=document.createElement('div')
+          a.map(i=>dv.appendChild(i))
+          w=window.open()
+          w.document.write(dv.innerHTML)
+          console.log(y)
+        })
+      }
