@@ -1,7 +1,7 @@
 Coding={}
 
 Coding.parser=peg.generate(String.raw`
-start=a:(_(str/mod)_)*{
+start=a:(_(str/num/mod)_)*{
   return a.map(x=>x[1])
 }
 
@@ -12,6 +12,12 @@ str='"'a:([^"\\]/'\\'.)*'"'?{
     type:'str',
     body:a.map(x=>x.pop?x[1]=='"'?'"':x.join(''):x).join('').replace(/\\\\/g,'\\')
   }
+}
+num=a:$[0-9]+{
+    return{
+      type:'num',
+      body:a
+    }
 }
 
 mod=tag/class/id/attr/op
@@ -49,34 +55,40 @@ op=h:$(.+){
 
 Coding.eval=(x,y)=>{
   let code=Coding.parser.parse(x.replace(/^[ \n]*/g,''))
-  let strst=[]
-  let elest=[]
+  let sst=[]
+  let est=[]
+  let swap=(a,x,y)=>[a[x],a[y]]=[a[y],a[x]]
   let base={
-    '$s':_=>strst.push(strst[strst.length-1])
+    '$s':_=>sst.push(sst[sst.length-sst.pop().body-1]),
+    '$e':_=>est.push(est[est.length-sst.pop().body-1]),
+    '%s':_=>sst.splice(sst.length-sst.pop().body-1,1),
+    '%e':_=>est.splice(est.length-est.pop().body-1,1),
+    '\\s':_=>sst.splice(sst.length-sst.pop().body-1,0,sst.pop()),
+    '\\e':_=>est.splice(est.length-est.pop().body-1,0,est.pop())
   }
 
-  for(ip=0;a=code[ip];ip++){
-    if(a.type=='str'){
-      strst.push(a.body)
+  for(let ip=0,a;a=code[ip];ip++){
+    if(a.type=='str'||a.type=='num'){
+      sst.push(a)
     }
-    if(a.type=='tag'){
+    else if(a.type=='tag'){
       let el=document.createElement(a.body)
-      el.innerHTML=strst.pop()
-      elest.push(el)
+      el.innerHTML=sst.pop()
+      est.push(el)
     }
-    if(a.type=='class'){
-      elest[elest.length-1].class+=' '+a.body
+    else if(a.type=='class'){
+      est[est.length-1].class+=' '+a.body
     }
-    if(a.type=='id'){
-      elest[elest.length-1].id=a.body
+    else if(a.type=='id'){
+      est[est.length-1].id=a.body
     }
-    if(a.type=='attr'){
-      elest[elest.length-1].setAttribute(a.body,strst.pop())
+    else if(a.type=='attr'){
+      est[est.length-1].setAttribute(a.body,sst.pop())
     }
-    if(a.type=='op'){
+    else if(a.type=='op'){
       base[a.body]()
     }
   }
 
-  y(strst,elest)
+  y(sst,est)
 }
