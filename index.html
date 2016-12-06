@@ -18,10 +18,10 @@
       r.onclick=_=>{
         Coding.eval(x.value,(a,b)=>{
           dv=document.createElement('div')
-          a.map(i=>dv.appendChild(i))
+          b.map(i=>dv.appendChild(i))
           w=window.open()
           w.document.write(dv.innerHTML)
-          console.log(b)
+          console.log(a,b)
         })
       }
     </script>
