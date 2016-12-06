@@ -8,16 +8,10 @@ start=a:(_(str/num/mod)_)*{
 _=[ \n]*
 
 str='"'a:([^"\\]/'\\'.)*'"'?{
-  return{
-    type:'str',
-    body:a.map(x=>x.pop?x[1]=='"'?'"':x.join(''):x).join('').replace(/\\\\/g,'\\')
-  }
+  return a.map(x=>x.pop?x[1]=='"'?'"':x.join(''):x).join('').replace(/\\\\/g,'\\')
 }
 num=a:$[0-9]+{
-    return{
-      type:'num',
-      body:a
-    }
+    return +a
 }
 
 mod=tag/class/id/attr/op
@@ -59,16 +53,17 @@ Coding.eval=(x,y)=>{
   let est=[]
   let swap=(a,x,y)=>[a[x],a[y]]=[a[y],a[x]]
   let base={
-    '$s':_=>sst.push(sst[sst.length-sst.pop().body-1]),
-    '$e':_=>est.push(est[est.length-sst.pop().body-1]),
-    '%s':_=>sst.splice(sst.length-sst.pop().body-1,1),
-    '%e':_=>est.splice(est.length-est.pop().body-1,1),
-    '\\s':_=>sst.splice(sst.length-sst.pop().body-1,0,sst.pop()),
-    '\\e':_=>est.splice(est.length-est.pop().body-1,0,est.pop())
+    '$s':_=>sst.push(sst[sst.length-sst.pop()-1]),
+    '$e':_=>est.push(est[est.length-sst.pop()-1]),
+    '%s':_=>sst.splice(sst.length-sst.pop()-1,1),
+    '%e':_=>est.splice(est.length-est.pop()-1,1),
+    '\\s':_=>sst.splice(sst.length-sst.pop()-1,0,sst.pop()),
+    '\\e':_=>est.splice(est.length-est.pop()-1,0,est.pop()),
+    '+':_=>est.pop()+est.pop()
   }
 
   for(let ip=0,a;a=code[ip];ip++){
-    if(a.type=='str'||a.type=='num'){
+    if(!a.type){
       sst.push(a)
     }
     else if(a.type=='tag'){
