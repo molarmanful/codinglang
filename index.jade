@@ -17,7 +17,7 @@ html
       r.onclick=_=>{
         Coding.eval(x.value,(a,b)=>{
           dv=document.createElement('div')
-          b.map(i=>dv.appendChild(i))
+          b.map(i=>dv.append(i))
           w=window.open()
           w.document.write(dv.innerHTML)
           console.log(JSON.stringify(a),b)

@@ -39,7 +39,7 @@ attr='@'h:$([A-Za-z][-_A-Za-z0-9]*){
     body:h
   }
 }
-op=h:$(.+){
+op=h:$([^ \n]+){
   return{
     type:'op',
     body:h
@@ -51,7 +51,6 @@ Coding.eval=(x,y)=>{
   let code=Coding.parser.parse(x.replace(/^[ \n]*/g,''))
   let sst=[]
   let est=[]
-  let swap=(a,x,y)=>[a[x],a[y]]=[a[y],a[x]]
   let base={
     '$s':_=>sst.push(sst[sst.length-sst.pop()-1]),
     '$e':_=>est.push(est[est.length-sst.pop()-1]),
@@ -59,16 +58,20 @@ Coding.eval=(x,y)=>{
     '%e':_=>est.splice(est.length-est.pop()-1,1),
     '\\s':_=>sst.splice(sst.length-sst.pop()-1,0,sst.pop()),
     '\\e':_=>est.splice(est.length-est.pop()-1,0,est.pop()),
-    '+':_=>est.pop()+est.pop()
+    '+':_=>sst.push(sst.pop()+sst.pop()),
+    '-':_=>sst.push(-sst.pop()- -sst.pop()),
+    '*':_=>sst.push(sst.pop()*sst.pop()),
+    '/':(x=sst.pop(),y=sst.pop())=>sst.push(0|y/x,y%x),
+    '^':(x=sst.pop(),y=sst.pop())=>sst.push(Math.pow(y,x)),
   }
 
-  for(let ip=0,a;a=code[ip];ip++){
+  for(let ip=0,a;a=code[ip],a||a==''||a==0;ip++){
     if(!a.type){
       sst.push(a)
     }
     else if(a.type=='tag'){
       let el=document.createElement(a.body)
-      el.innerHTML=sst.pop()
+      el.innerHTML=sst.pop()||''
       est.push(el)
     }
     else if(a.type=='class'){
