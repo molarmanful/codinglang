@@ -5,6 +5,7 @@
     <title>The Coding Programming Language - Interpreter</title>
     <script src="peg.js"></script>
     <script src="coding.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <style>
       textarea{
         font-family:monospace;
@@ -16,13 +17,13 @@
     <button id="r">Run</button>
     <script>
       r.onclick=_=>{
-        Coding.eval(x.value,(a,b)=>{
-          dv=document.createElement('div')
-          b.map(i=>dv.append(i))
-          w=window.open()
-          w.document.write(dv.innerHTML)
-          console.log(JSON.stringify(a),b)
-        })
+        [a,b]=Coding.eval(x.value)
+        dv=document.createElement('div')
+        b.map(i=>$(dv).append(i))
+        w=window.open()
+        w.document.write(dv.innerHTML)
+        console.log(a)
+        console.log(b)
       }
     </script>
   </body>

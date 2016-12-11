@@ -6,6 +6,7 @@ html
     title The Coding Programming Language - Interpreter
     script(src='peg.js')
     script(src='coding.js')
+    script(src='https://code.jquery.com/jquery-3.1.1.min.js')
     style.
       textarea{
         font-family:monospace;
@@ -15,11 +16,11 @@ html
     button#r Run
     script.
       r.onclick=_=>{
-        Coding.eval(x.value,(a,b)=>{
-          dv=document.createElement('div')
-          b.map(i=>dv.append(i))
-          w=window.open()
-          w.document.write(dv.innerHTML)
-          console.log(JSON.stringify(a),b)
-        })
+        [a,b]=Coding.eval(x.value)
+        dv=document.createElement('div')
+        b.map(i=>$(dv).append(i))
+        w=window.open()
+        w.document.write(dv.innerHTML)
+        console.log(a)
+        console.log(b)
       }
