@@ -41,7 +41,7 @@ op=h:$([^ \n()""@#.]+){
 fn='('a:$([^)\\]/'\\'.)*')'?{
   return{
     type:'fn',
-    body:a.replace(/\\(.)/g,'$1')
+    body:a.replace(/\\\)/g,')')
   }
 }
 `)
@@ -59,7 +59,7 @@ Coding.eval=(x,sst=[],est=[])=>{
     '*':_=>sst[sst.length-2]+=s.pop(),
     '*e':_=>est[est.length-2].innerHTML=(est[est.length-2].innerHTML||est[est.length-2])+est.pop(),
     'a':_=>sst.push(`(${sst.pop().replace(/\)/g,'\\)')})`),
-    '^':_=>[sst,est]=Coding.eval(sst.pop(),sst,est)
+    '^':_=>[sst,est]=Coding.eval(sst.pop().replace(/\\\)/g,')'),sst,est)
   }
 
   let E=x=>{
