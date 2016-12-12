@@ -1,18 +1,11 @@
 Coding={}
 
 Coding.parser=peg.generate(String.raw`
-start=a:(_(str/num/mod)_)*{
+start=a:(_ mod _)*{
   return a.map(x=>x[1])
 }
 
 _=[ \n]*
-
-str='"'a:([^"\\]/'\\'.)*'"'?{
-  return a.map(x=>x.pop?x[1]=='"'?'"':x.join(''):x).join('').replace(/\\\\/g,'\\')
-}
-num=a:$[0-9]+{
-    return +a
-}
 
 mod=fn/tag/class/id/attr/op
 tag='>'h:$([A-Za-z][-_A-Za-z0-9]*){
@@ -45,42 +38,33 @@ op=h:$([^ \n()""@#.]+){
     body:h
   }
 }
-fn='('a:start')'b:op{
+fn='('a:$([^)\\]/'\\'.)*')'?{
   return{
     type:'fn',
-    body:a,
-    f:b.body
+    body:a.replace(/\\(.)/g,'$1')
   }
 }
 `)
 
-Coding.eval=(x,y)=>{
-  let sst=[]
-  let est=[]
+Coding.eval=(x,sst=[],est=[])=>{
   let base={
-    '$s':_=>sst.push(sst[sst.length-sst.pop()-1]),
-    '$e':_=>est.push(est[est.length-sst.pop()-1]),
-    '%s':_=>sst.splice(sst.length-sst.pop()-1,1),
-    '%e':_=>est.splice(est.length-est.pop()-1,1),
-    '\\s':_=>sst.splice(sst.length-sst.pop()-1,0,sst.pop()),
-    '\\e':_=>est.splice(est.length-est.pop()-1,0,est.pop()),
-    '>':_=>est.push(sst.pop()||''),
-    '<h':_=>sst.push(est.pop().innerHTML),
-    '<t':_=>sst.push(est.pop().innerText),
-    '+s':_=>sst[sst.length-2]+=sst.pop(),
-    '+e':_=>
-      est[est.length-2].innerHTML!=[]._?
-        (est[est.length-2].innerHTML+=est.pop())
-      :est[est.length-1].innerHTML!=[]._?
-        (est[est.length-1].innerHTML=est.splice(-2,1)+est[est.length-1].innerHTML)
-      :(est[est.length-2]+=est.pop())
+    '~':_=>sst.splice(-1,0,sst.pop()),
+    '~e':_=>est.splice(-1,0,est.pop()),
+    ':':_=>sst.push(sst[sst.length-1]),
+    ':e':_=>est.push(est[est.length-1]),
+    '!':_=>sst.pop(),
+    '!e':_=>est.pop(),
+    'S':_=>est.push($('<div></div>').text(sst.pop()).html()),
+    'Se':_=>(sst.push(est[est.length-1].outerHTML||est[est.length-1]),est.pop()),
+    '*':_=>sst[sst.length-2]+=s.pop(),
+    '*e':_=>est[est.length-2].innerHTML=(est[est.length-2].innerHTML||est[est.length-2])+est.pop(),
+    'a':_=>sst.push(`(${sst.pop().replace(/\)/g,'\\)')})`),
+    '^':_=>[sst,est]=Coding.eval(sst.pop(),sst,est)
   }
+
   let E=x=>{
     for(let ip=0,a;a=x[ip],a||a==''||a==0;ip++){
-      if(!a.type){
-        sst.push(a)
-      }
-      else if(a.type=='tag'){
+      if(a.type=='tag'){
         let el=document.createElement(a.body)
         el.innerHTML=sst.pop()||''
         est.push(el)
@@ -98,10 +82,11 @@ Coding.eval=(x,y)=>{
         base[a.body]()
       }
       else if(a.type=='fn'){
-        base[a.f]=_=>E(a.body)
+        sst.push(a.body)
       }
     }
   }
+
   E(Coding.parser.parse(x.replace(/^[ \n]*/g,'')))
 
   return[sst,est]
