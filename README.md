@@ -22,6 +22,13 @@ A fancier Hello world:
   (h.style.color='red')@onmouseleave
 *e
 ```
+
+Quine:
+
+```
+(: a S S): a S S
+```
+
 ##Specifications
 `Coding` is essentially [Underload](https://esolangs.org/wiki/Underload) optimized for HTML -- "stack-based HTML." As of now, the standard library pretty much consists of only the essential functions needed for Turing-completeness and basic markup; expansion will come with time.
 
