@@ -21,10 +21,10 @@ html
     script.
       r.onclick=_=>{
         [a,b]=Coding.eval(x.value)
-        dv=document.createElement('div')
-        b.map(i=>$(dv).append(i))
-        w=window.open()
+        dv=document.createElement('html')
+        b.map(i=>$(dv).append(i.outerHTML||i))
+        w=window.open('')
         w.document.write(dv.innerHTML)
         console.log(a)
-        console.log(b)
+        console.log(b.map(x=>x.outerHTML||x))
       }

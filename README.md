@@ -3,6 +3,25 @@ The Coding Language official browser Javascript interpreter and specs. Made in r
 
 As of now, the interpreter only works in browsers with ES6 support. Legacy Javascript support will come soon.
 
+##Examples
+Hello world:
+
+```
+(Hello, world!) S
+```
+
+A fancier Hello world:
+
+```
+>div
+  (height:100%;display:flex;justify-content:center;align-items:center)@style
+(Hello, world!)>h1
+  #h
+  (color:red;font-family:"Comic Sans MS")@style
+  (h.style.color='blue')@onmouseenter
+  (h.style.color='red')@onmouseleave
+*e
+```
 ##Specifications
 `Coding` is essentially [Underload](https://esolangs.org/wiki/Underload) optimized for HTML -- "stack-based HTML." As of now, the standard library pretty much consists of only the essential functions needed for Turing-completeness and basic markup; expansion will come with time.
 
