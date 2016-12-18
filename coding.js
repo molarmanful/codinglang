@@ -56,7 +56,7 @@ Coding.eval=(x,sst=[],est=[])=>{
     '!e':_=>est.pop(),
     'S':_=>est.push($('<div></div>').text(sst.pop()).html()),
     'Se':_=>(sst.push(est[est.length-1].outerHTML||est[est.length-1]),est.pop()),
-    '*':_=>sst[sst.length-2]+=s.pop(),
+    '*':_=>sst[sst.length-2]+=sst.pop(),
     '*e':_=>
       est[est.length-2].innerHTML!=[]._?
         $(est[est.length-2]).append(est.pop())
