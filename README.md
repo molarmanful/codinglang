@@ -3,7 +3,7 @@ The Coding Language official browser Javascript interpreter and specs. Made in r
 
 As of now, the interpreter only works in browsers with ES6 support. Legacy Javascript support will come soon.
 
-##Examples
+## Examples
 Hello world:
 
 ```
@@ -29,10 +29,10 @@ Quine:
 (: a S S): a S S
 ```
 
-##Specifications
+## Specifications
 `Coding` is essentially [Underload](https://esolangs.org/wiki/Underload) optimized for HTML -- "stack-based HTML." As of now, the standard library pretty much consists of only the essential functions needed for Turing-completeness and basic markup; expansion will come with time.
 
-###Syntax
+### Syntax
 `Coding` has 2 stacks, one for strings and another for HTML output. Parentheses push to the string stack; for example, `(asdf)` would push `asdf` to the string stack. Trailing parentheses are optional, but be sure to escape parentheses with `\` when necessary.
 
 ```
@@ -52,7 +52,7 @@ The standard library has a function `S` that can push from the string stack to t
 
 Functions are anything matched by the regex `[^ \n()""@#.]+`.
 
-###Standard library
+### Standard library
 You may need to whitespace-separate for parser clarity.
 
 - `~`: SWAP. Append `e` to the command to perform on the output stack.
